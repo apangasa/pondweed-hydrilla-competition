@@ -23,14 +23,15 @@ def read_data(fname: str, initial_mass_handler: InitialMassHandler) -> dict[int,
         for row in reader:
             bucket_num: int = int(row[0])
 
-            data_dict[bucket_num] = {
-                'pis_initial': [],
-                'hva_initial': [],
-                'nutrient_ratio': 0,
-                'shade': None,
-                'pis_final': [],
-                'hva_final': []
-            }
+            if bucket_num not in data_dict.keys():
+                data_dict[bucket_num] = {
+                    'pis_initial': [],
+                    'hva_initial': [],
+                    'nutrient_ratio': 0,
+                    'shade': None,
+                    'pis_final': [],
+                    'hva_final': []
+                }
 
             pis_initial, hva_initial = initial_mass_handler.get_initial_masses(
                 row[1])
