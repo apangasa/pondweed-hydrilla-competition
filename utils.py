@@ -25,6 +25,17 @@ class RawData:
     pis_final: float
     hva_final: float
 
+    def transform_features(self, transform_functions: TransformFunctions) -> np.array:
+        new_features = []
+
+        new_features.extend(transform_functions.transform(self.pis_initial))
+        new_features.extend(transform_functions.transform(self.hva_initial))
+        new_features.extend(transform_functions.transform(self.nutrient_ratio))
+
+        new_features.append(int(self.shade))
+
+        return np.array(new_features)
+
 
 @dataclass
 class TransformFunctions:
