@@ -13,3 +13,14 @@ class InitialMassHandler:
         hva_units, pis_units = tuple([int(term)
                                       for term in read_ratio.split(':')])
         return self.avg_unit_pis * pis_units, self.avg_unit_hva * hva_units
+
+
+@dataclass
+class RawData:
+    pis_initial: float
+    hva_initial: float
+    nutrient_ratio: float
+    shade: bool
+
+    pis_final: float
+    hva_final: float
