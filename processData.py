@@ -44,3 +44,24 @@ def read_data(fname: str, initial_mass_handler: InitialMassHandler) -> dict[int,
                 data_dict[bucket_num]['hva_final'].append(float(row[4]))
 
     return data_dict
+
+
+def format_data(data_dict: dict[int, DataMap]) -> list[RawData]:
+    data: list[RawData] = []
+
+    for bucket_num in data_dict.keys():
+        pis_initial_list = data_dict[bucket_num]['pis_initial']
+        hva_initial_list = data_dict[bucket_num]['hva_initial']
+        nutrient_ratio = data_dict[bucket_num]['nutrient_ratio']
+        shade = data_dict[bucket_num]['shade']
+        pis_final_list = data_dict[bucket_num]['pis_final']
+        hva_final_list = data_dict[bucket_num]['hva_final']
+
+        pis_initial = average(pis_initial_list)
+        hva_initial = average(hva_initial_list)
+        pis_final = average(pis_final_list)
+        hva_final = average(hva_final_list)
+
+        data.append(RawData(pis_initial=pis_initial, hva_initial=hva_initial,
+                            nutrient_ratio=nutrient_ratio, shade=shade, pis_final=pis_final, hva_final=hva_final))
+    return data
