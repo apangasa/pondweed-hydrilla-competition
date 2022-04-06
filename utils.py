@@ -43,10 +43,10 @@ class RawData:
 
 @dataclass
 class TransformFunctions:
-    functions: set[Callable]
+    functions: list[Callable]
 
     def __post_init__(self):
-        self.functions.add(lambda x: x)
+        self.functions.append(lambda x: x)
 
     def transform(self, feature: float) -> list[float]:
         return [func(feature) for func in self.functions]
