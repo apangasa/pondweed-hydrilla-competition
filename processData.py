@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import *
 
 import csv
+import math
+import random
 
 from utils import *
 
@@ -65,3 +67,28 @@ def format_data(data_dict: dict[int, DataMap]) -> list[RawData]:
         data.append(RawData(pis_initial=pis_initial, hva_initial=hva_initial,
                             nutrient_ratio=nutrient_ratio, shade=shade, pis_final=pis_final, hva_final=hva_final))
     return data
+
+
+def main():
+    initial_mass_handler = InitialMassHandler(0.11, 0.13)
+    transform_functions = TransformFunctions({
+        lambda x: math.log(x) if x != 0 else math.log(EPSILON),
+        lambda x: 1 / x if x != 0 else 1 / EPSILON,
+        lambda x: x ** 2,
+        lambda x: x ** 3,
+        lambda x: math.sqrt(x)
+    })
+
+    data_dict: dict[int, DataMap] = read_data(
+        'shade_run1.csv', initial_mass_handler)
+    data: list[RawData] = format_data(data_dict)
+
+    random.shuffle(data)
+
+    phi = np.array([point.transform_features(transform_functions)
+                    for point in data])
+    y = np.array([[point.pis_final, point.hva_final] for point in data])
+
+
+if __name__ == '__main__':
+    main()
