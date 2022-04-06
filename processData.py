@@ -80,7 +80,7 @@ def main():
     })
 
     data_dict: dict[int, DataMap] = read_data(
-        'shade_run1.csv', initial_mass_handler)
+        './data/shade_run1.csv', initial_mass_handler)
     data: list[RawData] = format_data(data_dict)
 
     random.shuffle(data)
