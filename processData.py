@@ -71,7 +71,6 @@ def format_data(data_dict: dict[int, DataMap]) -> list[RawData]:
 
 
 def main():
-    initial_mass_handler = InitialMassHandler(0.11, 0.13)
     transform_functions = TransformFunctions({
         lambda x: math.log(x) if x != 0 else math.log(EPSILON),
         lambda x: 1 / x if x != 0 else 1 / EPSILON,
@@ -80,15 +79,26 @@ def main():
         lambda x: math.sqrt(x)
     })
 
+    data: list[RawData] = []
+
+    initial_mass_handler = InitialMassHandler(0.11, 0.13)
     data_dict: dict[int, DataMap] = read_data(
         './data/shade_run1.csv', initial_mass_handler)
-    data: list[RawData] = format_data(data_dict)
+    data.extend(format_data(data_dict))
+
+    initial_mass_handler = InitialMassHandler(0.16, 0.10)
+    data_dict: dict[int, DataMap] = read_data(
+        './data/shade_run2.csv', initial_mass_handler)
+    data.extend(format_data(data_dict))
 
     random.shuffle(data)
 
     phi = np.array([point.transform_features(transform_functions)
                     for point in data])
     y = np.array([[point.pis_final, point.hva_final] for point in data])
+
+    print(phi.shape)
+    print(y.shape)
 
 
 if __name__ == '__main__':
