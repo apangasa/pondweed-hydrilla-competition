@@ -24,3 +24,14 @@ class RawData:
 
     pis_final: float
     hva_final: float
+
+
+@dataclass
+class TransformFunctions:
+    functions: set[Callable]
+
+    def __post_init__(self):
+        self.functions.add(lambda x: x)
+
+    def transform(self, feature: float) -> list[float]:
+        return [func(feature) for func in self.functions]
