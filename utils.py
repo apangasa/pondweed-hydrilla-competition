@@ -4,6 +4,10 @@ from typing import Callable
 import numpy as np
 
 
+def average(x: list[float]) -> float:
+    return sum(x) / len(x) if len(x) else 0.0
+
+
 @dataclass
 class InitialMassHandler:
     avg_unit_pis: float
