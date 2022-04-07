@@ -1,7 +1,11 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Callable
+from typing import *
+
 import numpy as np
+import random
+
+from sklearn.preprocessing import MinMaxScaler, PolynomialFeatures
 
 
 def average(x: list[float]) -> float:
@@ -37,11 +41,38 @@ class RawData:
         new_features.extend(transform_functions.transform(self.nutrient_ratio))
         new_features.extend(transform_functions.transform(self.shade))
 
+        new_features = PolynomialFeatures(
+            degree=transform_functions.poly_degree).fit_transform(new_features)
+
         return np.array(new_features)
 
 
 @dataclass
+class DataContainer:
+    data_list: list[RawData]
+    phi: np.ndarray = None
+    y: np.ndarray = None
+    scaler: MinMaxScaler = None
+
+    def transform_features(self, transform_functions: TransformFunctions) -> np.ndarray:
+        self.phi = np.array([point.transform_features(
+            transform_functions) for point in self.data_list])
+        self.y = np.array([[point.pis_final, point.hva_final]
+                           for point in self.data_list])
+
+    def get_features_and_classes(self, transform_functions: TransformFunctions, normalize: bool = False, shuffle: bool = False) -> tuple[np.ndarray, np.ndarray]:
+        if shuffle:
+            random.shuffle(self.data_list)
+        self.transform_features(transform_functions)
+        self.scaler = MinMaxScaler()
+        self.phi = self.scaler.fit_transform(self.phi)
+
+        return self.phi, self.y
+
+
+@dataclass
 class TransformFunctions:
+    poly_degree: int
     functions: list[Callable]
 
     def __post_init__(self):
