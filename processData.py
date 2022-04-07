@@ -56,7 +56,6 @@ def format_data(data_dict: dict[int, DataMap]) -> list[RawData]:
     data: list[RawData] = []
 
     for bucket_num in data_dict.keys():
-        b
         pis_initial_list = data_dict[bucket_num]['pis_initial']
         hva_initial_list = data_dict[bucket_num]['hva_initial']
         nutrient_ratio = data_dict[bucket_num]['nutrient_ratio']
@@ -84,13 +83,13 @@ def main():
     data: list[RawData] = []
 
     initial_mass_handler = InitialMassHandler(
-        avg_unit_pis=0.11, avg_unit_hva=0.13)
+        avg_unit_pis=0.105, avg_unit_hva=0.125)
     data_dict: dict[int, DataMap] = read_data(
         './data/shade_run1.csv', initial_mass_handler)
     data.extend(format_data(data_dict))
 
     initial_mass_handler = InitialMassHandler(
-        avg_unit_pis=0.18, avg_unit_hva=0.10)
+        avg_unit_pis=0.178, avg_unit_hva=0.098)
     data_dict: dict[int, DataMap] = read_data(
         './data/shade_run2.csv', initial_mass_handler)
     data.extend(format_data(data_dict))
