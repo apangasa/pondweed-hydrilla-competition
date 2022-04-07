@@ -94,6 +94,12 @@ def main():
         './data/shade_run2.csv', initial_mass_handler)
     data.extend(format_data(data_dict))
 
+    initial_mass_handler = InitialMassHandler(
+        avg_unit_pis=0.1125, avg_unit_hva=0.0975)
+    data_dict: dict[int, DataMap] = read_data(
+        './data/np_run.csv', initial_mass_handler)
+    data.extend(format_data(data_dict))
+
     data_container = DataContainer(data_list=data)
     phi, y = data_container.get_features_and_classes(
         transform_functions=transform_functions, normalize=True, shuffle=True)
