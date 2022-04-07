@@ -40,13 +40,17 @@ def read_data(fname: str, initial_mass_handler: InitialMassHandler) -> dict[int,
 
             data_dict[bucket_num]['pis_initial'].append(pis_initial)
             data_dict[bucket_num]['hva_initial'].append(hva_initial)
-            data_dict[bucket_num]['nutrient_ratio'] = 0  # TODO
-            data_dict[bucket_num]['shade'] = int(row[2]) == 1
 
-            if 'PIS' in row[3]:
-                data_dict[bucket_num]['pis_final'].append(float(row[4]))
-            elif 'HVA' in row[3]:
-                data_dict[bucket_num]['hva_final'].append(float(row[4]))
+            nitrogen, phosphorous = row[2].split(':')
+
+            data_dict[bucket_num]['nutrient_ratio'] = float(
+                nitrogen) / float(phosphorous)
+            data_dict[bucket_num]['shade'] = int(row[3])
+
+            if 'PIS' in row[4]:
+                data_dict[bucket_num]['pis_final'].append(float(row[5]))
+            elif 'HVA' in row[4]:
+                data_dict[bucket_num]['hva_final'].append(float(row[5]))
 
     return data_dict
 
