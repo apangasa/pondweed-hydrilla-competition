@@ -5,6 +5,8 @@ import csv
 import math
 import random
 
+from sklearn.preprocessing import MinMaxScaler
+
 from utils import *
 
 # Globals
@@ -95,9 +97,11 @@ def main():
 
     phi = np.array([point.transform_features(transform_functions)
                     for point in data])
+    scaler = MinMaxScaler()
+    phi_norm = scaler.fit_transform(phi)
     y = np.array([[point.pis_final, point.hva_final] for point in data])
 
-    print(phi.shape)
+    print(phi_norm.shape)
     print(y.shape)
 
 
