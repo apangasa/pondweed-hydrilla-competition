@@ -4,8 +4,6 @@ from typing import *
 import csv
 import math
 
-from sklearn.preprocessing import MinMaxScaler
-
 from utils import *
 
 # Globals
@@ -58,6 +56,7 @@ def format_data(data_dict: dict[int, DataMap]) -> list[RawData]:
     data: list[RawData] = []
 
     for bucket_num in data_dict.keys():
+        b
         pis_initial_list = data_dict[bucket_num]['pis_initial']
         hva_initial_list = data_dict[bucket_num]['hva_initial']
         nutrient_ratio = data_dict[bucket_num]['nutrient_ratio']
@@ -76,22 +75,22 @@ def format_data(data_dict: dict[int, DataMap]) -> list[RawData]:
 
 
 def main():
-    transform_functions = TransformFunctions([
-        lambda x: math.log(x) if x != 0 else math.log(EPSILON),
+    transform_functions = TransformFunctions(poly_degree=3, functions=[
+        lambda x: math.log(x) if x != 0 else math.log(
+            EPSILON),
         lambda x: 1 / x if x != 0 else 1 / EPSILON,
-        lambda x: x ** 2,
-        lambda x: x ** 3,
-        lambda x: math.sqrt(x)
-    ])
+        lambda x: math.sqrt(x)])
 
     data: list[RawData] = []
 
-    initial_mass_handler = InitialMassHandler(0.11, 0.13)
+    initial_mass_handler = InitialMassHandler(
+        avg_unit_pis=0.11, avg_unit_hva=0.13)
     data_dict: dict[int, DataMap] = read_data(
         './data/shade_run1.csv', initial_mass_handler)
     data.extend(format_data(data_dict))
 
-    initial_mass_handler = InitialMassHandler(0.16, 0.10)
+    initial_mass_handler = InitialMassHandler(
+        avg_unit_pis=0.18, avg_unit_hva=0.10)
     data_dict: dict[int, DataMap] = read_data(
         './data/shade_run2.csv', initial_mass_handler)
     data.extend(format_data(data_dict))
@@ -99,6 +98,9 @@ def main():
     data_container = DataContainer(data_list=data)
     phi, y = data_container.get_features_and_classes(
         transform_functions=transform_functions, normalize=True, shuffle=True)
+
+    print(phi.shape)
+    print(y.shape)
 
 
 if __name__ == '__main__':
