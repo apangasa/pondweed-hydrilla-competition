@@ -24,7 +24,7 @@ class RawData:
     pis_initial: float
     hva_initial: float
     nutrient_ratio: float
-    shade: bool
+    shade: int
 
     pis_final: float
     hva_final: float
