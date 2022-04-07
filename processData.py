@@ -71,13 +71,13 @@ def format_data(data_dict: dict[int, DataMap]) -> list[RawData]:
 
 
 def main():
-    transform_functions = TransformFunctions({
+    transform_functions = TransformFunctions([
         lambda x: math.log(x) if x != 0 else math.log(EPSILON),
         lambda x: 1 / x if x != 0 else 1 / EPSILON,
         lambda x: x ** 2,
         lambda x: x ** 3,
         lambda x: math.sqrt(x)
-    })
+    ])
 
     data: list[RawData] = []
 
