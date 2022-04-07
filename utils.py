@@ -35,8 +35,7 @@ class RawData:
         new_features.extend(transform_functions.transform(self.pis_initial))
         new_features.extend(transform_functions.transform(self.hva_initial))
         new_features.extend(transform_functions.transform(self.nutrient_ratio))
-
-        new_features.append(int(self.shade))
+        new_features.extend(transform_functions.transform(self.shade))
 
         return np.array(new_features)
 
