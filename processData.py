@@ -3,7 +3,6 @@ from typing import *
 
 import csv
 import math
-import random
 
 from sklearn.preprocessing import MinMaxScaler
 
@@ -97,16 +96,9 @@ def main():
         './data/shade_run2.csv', initial_mass_handler)
     data.extend(format_data(data_dict))
 
-    random.shuffle(data)
-
-    phi = np.array([point.transform_features(transform_functions)
-                    for point in data])
-    scaler = MinMaxScaler()
-    phi_norm = scaler.fit_transform(phi)
-    y = np.array([[point.pis_final, point.hva_final] for point in data])
-
-    print(phi_norm.shape)
-    print(y.shape)
+    data_container = DataContainer(data_list=data)
+    phi, y = data_container.get_features_and_classes(
+        transform_functions=transform_functions, normalize=True, shuffle=True)
 
 
 if __name__ == '__main__':
