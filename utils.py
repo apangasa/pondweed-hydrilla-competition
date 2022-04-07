@@ -42,9 +42,11 @@ class RawData:
         new_features.extend(transform_functions.transform(self.shade))
 
         new_features = PolynomialFeatures(
-            degree=transform_functions.poly_degree).fit_transform(new_features)
+            degree=transform_functions.poly_degree).fit_transform(np.array([new_features]))
 
-        return np.array(new_features)
+        new_features = new_features.flatten()
+
+        return new_features
 
 
 @dataclass
@@ -64,8 +66,9 @@ class DataContainer:
         if shuffle:
             random.shuffle(self.data_list)
         self.transform_features(transform_functions)
-        self.scaler = MinMaxScaler()
-        self.phi = self.scaler.fit_transform(self.phi)
+        if normalize:
+            self.scaler = MinMaxScaler()
+            self.phi = self.scaler.fit_transform(self.phi)
 
         return self.phi, self.y
 
