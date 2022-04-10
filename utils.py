@@ -1,15 +1,22 @@
 from __future__ import annotations
 from dataclasses import dataclass
+from enum import Enum
 from typing import *
 
 import numpy as np
 import random
 
-from sklearn.preprocessing import MinMaxScaler, PolynomialFeatures
+from sklearn import preprocessing
 
 
 def average(x: list[float]) -> float:
     return sum(x) / len(x) if len(x) else 0.0
+
+
+class Category(Enum):
+    INCREASED = 0
+    DECREASED = 0
+    EXTINCT = 0
 
 
 @dataclass
@@ -34,43 +41,61 @@ class RawData:
     hva_final: float
 
     def transform_features(self, transform_functions: TransformFunctions) -> np.array:
-        new_features = []
+        new_features: list = []
 
         new_features.extend(transform_functions.transform(self.pis_initial))
         new_features.extend(transform_functions.transform(self.hva_initial))
         new_features.extend(transform_functions.transform(self.nutrient_ratio))
         new_features.extend(transform_functions.transform(self.shade))
 
-        new_features = PolynomialFeatures(
+        np_new_features: np.ndarray = preprocessing.PolynomialFeatures(
             degree=transform_functions.poly_degree).fit_transform(np.array([new_features]))
 
-        new_features = new_features.flatten()
+        np_new_features = np_new_features.flatten()
 
-        return new_features
+        return np_new_features
+
+    def categorize(self):
+        self.pis_category: Category = None
+        self.hva_category: Category = None
+
+        if self.pis_final >= self.pis_initial:
+            self.pis_category = Category.INCREASED
+        elif self.pis_final == 0:
+            self.pis_category = Category.EXTINCT
+        else:
+            self.pis_category = Category.DECREASED
+
+        if self.hva_final >= self.hva_initial:
+            self.hva_category = Category.INCREASED
+        elif self.hva_final == 0:
+            self.hva_category = Category.EXTINCT
+        else:
+            self.hva_category = Category.DECREASED
 
 
 @dataclass
 class DataContainer:
     data_list: list[RawData]
-    phi: np.ndarray = None
+    psi_bar: np.ndarray = None
     y: np.ndarray = None
-    scaler: MinMaxScaler = None
+    scaler: preprocessing.MinMaxScaler = None
 
     def transform_features(self, transform_functions: TransformFunctions) -> np.ndarray:
-        self.phi = np.array([point.transform_features(
+        self.psi_bar = np.array([point.transform_features(
             transform_functions) for point in self.data_list])
         self.y = np.array([[point.pis_final, point.hva_final]
                            for point in self.data_list])
 
     def get_features_and_classes(self, transform_functions: TransformFunctions, normalize: bool = False, shuffle: bool = False) -> tuple[np.ndarray, np.ndarray]:
         if shuffle:
-            random.shuffle(self.data_list)
+            random.Random(42).shuffle(self.data_list)
         self.transform_features(transform_functions)
         if normalize:
-            self.scaler = MinMaxScaler()
-            self.phi = self.scaler.fit_transform(self.phi)
+            self.scaler = preprocessing.MinMaxScaler()
+            self.psi_bar = self.scaler.fit_transform(self.psi_bar)
 
-        return self.phi, self.y
+        return self.psi_bar, self.y
 
 
 @dataclass
