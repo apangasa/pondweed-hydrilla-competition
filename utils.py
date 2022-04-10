@@ -15,8 +15,8 @@ def average(x: list[float]) -> float:
 
 class Category(Enum):
     INCREASED = 0
-    DECREASED = 0
-    EXTINCT = 0
+    DECREASED = 1
+    EXTINCT = 2
 
 
 @dataclass
@@ -85,6 +85,12 @@ class DataContainer:
         self.psi_bar = np.array([point.transform_features(
             transform_functions) for point in self.data_list])
         self.y = np.array([[point.pis_final, point.hva_final]
+                           for point in self.data_list])
+
+    def categorize_y(self):
+        for point in self.data_list:
+            point.categorize()
+        self.y = np.array([[point.pis_category.value, point.hva_category.value]
                            for point in self.data_list])
 
     def get_features_and_classes(self, transform_functions: TransformFunctions, normalize: bool = False, shuffle: bool = False) -> tuple[np.ndarray, np.ndarray]:
