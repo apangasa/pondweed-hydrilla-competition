@@ -73,7 +73,7 @@ def format_data(data_dict: dict[int, DataMap]) -> list[RawData]:
     return data
 
 
-def main():
+def process_data():
     transform_functions = TransformFunctions(poly_degree=3, functions=[
         lambda x: math.log(x) if x != 0 else math.log(
             EPSILON),
@@ -101,11 +101,13 @@ def main():
     data.extend(format_data(data_dict))
 
     data_container = DataContainer(data_list=data)
-    phi, y = data_container.get_features_and_classes(
+    psi_bar, y = data_container.get_features_and_classes(
         transform_functions=transform_functions, normalize=True, shuffle=True)
+    return psi_bar, y
 
-    print(phi.shape)
-    print(y.shape)
+
+def main():
+    pass
 
 
 if __name__ == '__main__':
