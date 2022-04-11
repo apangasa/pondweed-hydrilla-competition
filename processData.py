@@ -77,7 +77,9 @@ def process_data():
         lambda x: math.log(x) if x != 0 else math.log(
             EPSILON),
         lambda x: 1 / x if x != 0 else 1 / EPSILON,
-        lambda x: math.sqrt(x)])
+        lambda x: math.sqrt(x),
+        lambda x: (1 / 2) ** x
+    ])
 
     data: list[RawData] = []
 
@@ -106,7 +108,9 @@ def process_data():
 
 
 def main():
-    pass
+    psi_bar, y = process_data()
+    print(psi_bar.shape)
+    print(y.shape)
 
 
 if __name__ == '__main__':
