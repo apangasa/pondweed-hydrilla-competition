@@ -5,9 +5,8 @@ import csv
 import math
 
 from utils import *
+from globals import *
 
-# Globals
-EPSILON = 1e-8
 
 # Type Aliases
 DataMap = NewType('DataMap', Dict[str, List[float]])

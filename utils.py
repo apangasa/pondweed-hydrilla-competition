@@ -6,6 +6,8 @@ from typing import *
 import numpy as np
 import random
 
+from globals import *
+
 from sklearn import preprocessing
 
 
@@ -95,7 +97,7 @@ class DataContainer:
 
     def get_features_and_classes(self, transform_functions: TransformFunctions, normalize: bool = False, shuffle: bool = False) -> tuple[np.ndarray, np.ndarray]:
         if shuffle:
-            random.Random(42).shuffle(self.data_list)
+            random.Random(SEED).shuffle(self.data_list)
         self.transform_features(transform_functions)
         if normalize:
             self.scaler = preprocessing.MinMaxScaler()
