@@ -30,7 +30,7 @@ def get_metrics(feature_matrix: np.ndarray, y_col: np.ndarray, model: linear_mod
     return r2, mae, mse
 
 
-def coeff_imp(psi_bar: np.ndarray, y_col: np.ndarray, model: linear_model._base.LinearModel) -> np.ndarray:
+def coeff_imp(psi_bar: np.ndarray, y_col: np.ndarray, model: linear_model._base.LinearModel) -> tuple[np.ndarray]:
     X_train, X_test, y_train, y_test = model_selection.train_test_split(
         psi_bar, y_col, train_size=TRAIN_PROPORTION, random_state=SEED)
     model.fit(X_train, y_train)
@@ -42,7 +42,7 @@ def coeff_imp(psi_bar: np.ndarray, y_col: np.ndarray, model: linear_model._base.
 
     coeffs: np.ndarray = model.coef_
     sorted_feature_indices: np.ndarray = np.flip(np.argsort(np.abs(coeffs)))
-    return sorted_feature_indices
+    return sorted_feature_indices, coeffs
 
 
 def main():
@@ -55,13 +55,15 @@ def main():
 
     coeff_models = [
         linear_model.LinearRegression(),
-        linear_model.Lasso(),
+        # linear_model.Lasso(),
         linear_model.Ridge(),
-        linear_model.ElasticNet()
+        # linear_model.ElasticNet()
     ]
 
+    indices_list = []
+
     for model in coeff_models:
-        indices: np.ndarray = coeff_imp(psi_bar, y_pis, model)
+        indices, coeffs = coeff_imp(psi_bar, y_pis, model)
 
         max_r2: float = None
         max_r2_s: int = 0
@@ -72,9 +74,15 @@ def main():
             if max_r2 is None or r2 > max_r2:
                 max_r2 = r2
                 max_r2_s = s
-        print(
-            f'For {model}, the optimal value of s={max_r2_s}, yielding test R^2 = {max_r2}')
-        # print(indices[:s])
+        #print(f'For {model}, the optimal value of s={max_r2_s}, yielding test R^2 = {max_r2}')
+        indices_list.append(indices)
+
+    s = 100
+    linear_indices = set(indices_list[0][:s])
+    ridge_indices = set(indices_list[1][:s])
+
+    u = linear_indices.union(ridge_indices)
+    print(len(u))
 
 
 if __name__ == '__main__':
