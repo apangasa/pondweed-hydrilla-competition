@@ -6,6 +6,7 @@ from typing import *
 import numpy as np
 import random
 
+
 from globals import *
 
 from sklearn import preprocessing
@@ -62,6 +63,8 @@ class RawData:
         self.hva_category: Category = None
 
         if self.pis_final >= self.pis_initial:
+            if self.pis_final == self.pis_initial:
+                print(self.pis_final, self.pis_initial)
             self.pis_category = Category.INCREASED
         elif self.pis_final == 0:
             self.pis_category = Category.EXTINCT
@@ -69,6 +72,8 @@ class RawData:
             self.pis_category = Category.DECREASED
 
         if self.hva_final >= self.hva_initial:
+            if self.hva_final == self.hva_initial:
+                print(self.hva_final, self.hva_initial)
             self.hva_category = Category.INCREASED
         elif self.hva_final == 0:
             self.hva_category = Category.EXTINCT
@@ -104,6 +109,23 @@ class DataContainer:
             self.psi_bar = self.scaler.fit_transform(self.psi_bar)
 
         return self.psi_bar, self.y
+
+    def drop_zeroes(self, col: str):
+        if col == 'PIS':
+            new_data_list: list[RawData] = []
+            for point in self.data_list:
+                if point.pis_initial != 0:
+                    new_data_list.append(point)
+            self.data_list = new_data_list
+        elif col == 'HVA':
+            new_data_list: list[RawData] = []
+            for point in self.data_list:
+                if point.hva_initial != 0:
+                    new_data_list.append(point)
+            self.data_list = new_data_list
+        else:
+            print('No changes made.')
+            return
 
 
 @dataclass
