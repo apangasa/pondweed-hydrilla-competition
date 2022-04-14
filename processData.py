@@ -72,7 +72,7 @@ def format_data(data_dict: dict[int, DataMap]) -> list[RawData]:
     return data
 
 
-def process_data():
+def process_data(classification: bool = False):
     transform_functions = TransformFunctions(poly_degree=3, functions=[
         lambda x: math.log(x) if x != 0 else math.log(
             EPSILON),
@@ -102,6 +102,10 @@ def process_data():
     data.extend(format_data(data_dict))
 
     data_container = DataContainer(data_list=data)
+
+    if classification:
+        data_container.categorize_y()
+
     psi_bar, y = data_container.get_features_and_classes(
         transform_functions=transform_functions, normalize=True, shuffle=True)
     return psi_bar, y
