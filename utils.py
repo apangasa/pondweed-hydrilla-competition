@@ -62,21 +62,17 @@ class RawData:
         self.pis_category: Category = None
         self.hva_category: Category = None
 
-        if self.pis_final >= self.pis_initial:
-            if self.pis_final == self.pis_initial:
-                print(self.pis_final, self.pis_initial)
-            self.pis_category = Category.INCREASED
-        elif self.pis_final == 0:
+        if self.pis_final <= EXTINCTION_THRESHOLD:
             self.pis_category = Category.EXTINCT
+        elif self.pis_final >= self.pis_initial:
+            self.pis_category = Category.INCREASED
         else:
             self.pis_category = Category.DECREASED
 
-        if self.hva_final >= self.hva_initial:
-            if self.hva_final == self.hva_initial:
-                print(self.hva_final, self.hva_initial)
-            self.hva_category = Category.INCREASED
-        elif self.hva_final == 0:
+        if self.hva_final <= EXTINCTION_THRESHOLD:
             self.hva_category = Category.EXTINCT
+        elif self.hva_final >= self.hva_initial:
+            self.hva_category = Category.INCREASED
         else:
             self.hva_category = Category.DECREASED
 
@@ -87,12 +83,17 @@ class DataContainer:
     psi_bar: np.ndarray = None
     y: np.ndarray = None
     scaler: preprocessing.MinMaxScaler = None
+    classification: str = None
 
     def transform_features(self, transform_functions: TransformFunctions) -> np.ndarray:
+        if not self.classification:
+            self.y = np.array([[point.pis_final, point.hva_final]
+                               for point in self.data_list])
+        else:
+            self.drop_zeroes()
+            self.categorize_y()
         self.psi_bar = np.array([point.transform_features(
             transform_functions) for point in self.data_list])
-        self.y = np.array([[point.pis_final, point.hva_final]
-                           for point in self.data_list])
 
     def categorize_y(self):
         for point in self.data_list:
@@ -101,16 +102,27 @@ class DataContainer:
                            for point in self.data_list])
 
     def get_features_and_classes(self, transform_functions: TransformFunctions, normalize: bool = False, shuffle: bool = False) -> tuple[np.ndarray, np.ndarray]:
-        if shuffle:
-            random.Random(SEED).shuffle(self.data_list)
+        # if shuffle and not self.classification:
+        #     random.Random(SEED).shuffle(self.data_list)
         self.transform_features(transform_functions)
+
+        if shuffle:
+            combined = np.hstack((self.psi_bar, self.y))
+            random.Random(SEED).shuffle(combined)
+            self.psi_bar = combined[:, :-2]
+            self.y = combined[:, -2:]
+            # shuffler = np.random.permutation(len(self.y))
+            # self.psi_bar = self.psi_bar[shuffler]
+            # self.y = self.y[shuffler]
+
         if normalize:
             self.scaler = preprocessing.MinMaxScaler()
             self.psi_bar = self.scaler.fit_transform(self.psi_bar)
 
         return self.psi_bar, self.y
 
-    def drop_zeroes(self, col: str):
+    def drop_zeroes(self):
+        col = self.classification
         if col == 'PIS':
             new_data_list: list[RawData] = []
             for point in self.data_list:
