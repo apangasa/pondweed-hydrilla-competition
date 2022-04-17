@@ -76,6 +76,9 @@ class RawData:
         else:
             self.hva_category = Category.DECREASED
 
+        if self.hva_category == Category.EXTINCT:
+            self.hva_category = Category.DECREASED
+
 
 @dataclass
 class DataContainer:
